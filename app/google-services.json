@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "59756964643",
+    "firebase_url": "https://campus-selection-default-rtdb.firebaseio.com",
+    "project_id": "campus-selection",
+    "storage_bucket": "campus-selection.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59756964643:android:66f8f201e63a7da681fa96",
+        "android_client_info": {
+          "package_name": "com.moutamid.campusselectionproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "59756964643-ff79ng3gbqsqeqecfbq4t4901gm4fnuq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlzpcdgTEKvwJ-s63CAQHfnjvFXBJTX48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "59756964643-ff79ng3gbqsqeqecfbq4t4901gm4fnuq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
