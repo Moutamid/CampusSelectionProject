@@ -172,7 +172,6 @@ public class ReportActivity extends AppCompatActivity {
         });
     }
 
-
     private static class ReportModel {
 
         private String companyName, studentName, report, status, key;

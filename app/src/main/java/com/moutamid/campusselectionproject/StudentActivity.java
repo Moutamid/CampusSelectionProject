@@ -44,7 +44,7 @@ public class StudentActivity extends AppCompatActivity {
                 mAuth.signOut();
                 utils.removeSharedPref(StudentActivity.this);
                 Intent intent = new Intent(StudentActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 finish();
                 startActivity(intent);
             }
@@ -74,16 +74,23 @@ public class StudentActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                                if (!snapshot.exists()){
+                                if (!snapshot.exists()) {
                                     progressDialog.dismiss();
                                     Toast.makeText(StudentActivity.this, "No company exist with this name!", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
 
-                                currentCVmodel = snapshot.getValue(CompanyDetailModel.class);
+                                for (DataSnapshot dataSnapshot:snapshot.getChildren()) {
 
-                                progressDialog.dismiss();
-                                showListDialog(companyDetails());
+                                    currentCVmodel = dataSnapshot.getValue(CompanyDetailModel.class);
+
+                                    progressDialog.dismiss();
+
+                                    String details = companyDetails();
+
+                                    showListDialog1(details);
+
+                                }
 
                             }
 
@@ -138,23 +145,6 @@ public class StudentActivity extends AppCompatActivity {
                         Toast.makeText(StudentActivity.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
-                utils.showDialog(StudentActivity.this,
-                        "Company details",
-                        "Description of all companies Description Description Description Description Description",
-                        "",
-                        "",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        }, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        }, true);
             }
         });
 
@@ -242,6 +232,25 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     private void showListDialog(String details) {
+        utils.showDialog(StudentActivity.this,
+                "Company details",
+                details,
+                "",
+                "",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }, true);
+    }
+
+    private void showListDialog1(String details) {
         utils.showDialog(StudentActivity.this,
                 "Company details",
                 details,

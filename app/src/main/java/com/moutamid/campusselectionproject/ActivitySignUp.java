@@ -275,20 +275,18 @@ public class ActivitySignUp extends AppCompatActivity {
                     Toast.makeText(ActivitySignUp.this, "You are signed up!", Toast.LENGTH_SHORT).show();
 
                     if (isCompany) {
-                        //TODO: MOVE USER TO COMPANY'S ACTIVITY
                         utils.storeString(ActivitySignUp.this,
                                 "token", "company");
                         finish();
                         Intent intent = new Intent(ActivitySignUp.this, CompanyActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     } else {
-                        //TODO: MOVE USER TO STUDENT ACTIVITY
                         utils.storeString(ActivitySignUp.this,
                                 "token", "student");
                         finish();
                         Intent intent = new Intent(ActivitySignUp.this, StudentActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
 

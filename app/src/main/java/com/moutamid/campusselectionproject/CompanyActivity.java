@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ public class CompanyActivity extends AppCompatActivity {
     private static final String TAG = "CompanyActivity";
     private ProgressDialog progressDialog;
     private CVModel currentCVmodel;
+    private CompanyDetailModel currentCompanyDetailModel;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference databaseReference;
@@ -45,7 +47,7 @@ public class CompanyActivity extends AppCompatActivity {
                 mAuth.signOut();
                 utils.removeSharedPref(CompanyActivity.this);
                 Intent intent = new Intent(CompanyActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 finish();
                 startActivity(intent);
             }
@@ -57,22 +59,38 @@ public class CompanyActivity extends AppCompatActivity {
         findViewById(R.id.view_vacancy_cardview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                utils.showDialog(CompanyActivity.this,
-                        "Company details",
-                        "Description of all companies Description Description Description Description Description",
-                        "",
-                        "",
-                        new DialogInterface.OnClickListener() {
+
+                progressDialog.show();
+
+                databaseReference.child("Companies").child(mAuth.getCurrentUser().getUid())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                String details = "No company details exist!";
+
+                                if (!snapshot.exists()) {
+                                    progressDialog.dismiss();
+                                    showListDialog1(details);
+                                    return;
+                                }
+
+                                details = "";
+                                currentCompanyDetailModel = snapshot.getValue(CompanyDetailModel.class);
+
+                                progressDialog.dismiss();
+
+                                details = companyDetails();
+
+                                showListDialog1(details);
                             }
-                        }, new DialogInterface.OnClickListener() {
+
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                progressDialog.dismiss();
+                                Log.d(TAG, "onCancelled: " + error.getMessage());
                             }
-                        }, true);
+                        });
             }
         });
 
@@ -128,6 +146,15 @@ public class CompanyActivity extends AppCompatActivity {
         });
     }
 
+    private String companyDetails() {
+        return "Name: " + currentCompanyDetailModel.getName() + "\n" +
+                "Email: " + currentCompanyDetailModel.getEmail() + "\n" +
+                "Mobile No: " + currentCompanyDetailModel.getNumber() + "\n" +
+                "Eligibility: " + currentCompanyDetailModel.getEligibility() + "\n" +
+                "Vacancy: " + currentCompanyDetailModel.getVacancies() + "\n" +
+                "Salary: " + currentCompanyDetailModel.getSalary() + "\n\n";
+    }
+
     private String studentDetails() {
         return "Name: " + currentCVmodel.getName() + "\n" +
                 "Id: " + currentCVmodel.getId() + "\n" +
@@ -141,6 +168,25 @@ public class CompanyActivity extends AppCompatActivity {
     private void showListDialog(String details) {
         utils.showDialog(CompanyActivity.this,
                 "Student details",
+                details,
+                "",
+                "",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }, true);
+    }
+
+    private void showListDialog1(String details) {
+        utils.showDialog(CompanyActivity.this,
+                "Company details",
                 details,
                 "",
                 "",
@@ -256,6 +302,71 @@ public class CompanyActivity extends AppCompatActivity {
         }
 
         CVModel() {
+        }
+    }
+
+    private static class CompanyDetailModel {
+
+        private String name, number, email, eligibility, vacancies, salary;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public void setNumber(String number) {
+            this.number = number;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getEligibility() {
+            return eligibility;
+        }
+
+        public void setEligibility(String eligibility) {
+            this.eligibility = eligibility;
+        }
+
+        public String getVacancies() {
+            return vacancies;
+        }
+
+        public void setVacancies(String vacancies) {
+            this.vacancies = vacancies;
+        }
+
+        public String getSalary() {
+            return salary;
+        }
+
+        public void setSalary(String salary) {
+            this.salary = salary;
+        }
+
+        public CompanyDetailModel(String name, String number, String email, String eligibility, String vacancies, String salary) {
+            this.name = name;
+            this.number = number;
+            this.email = email;
+            this.eligibility = eligibility;
+            this.vacancies = vacancies;
+            this.salary = salary;
+        }
+
+        CompanyDetailModel() {
         }
     }
 }

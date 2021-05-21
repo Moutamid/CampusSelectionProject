@@ -28,7 +28,7 @@ public class AdminActivity extends AppCompatActivity {
                 mAuth.signOut();
                 utils.removeSharedPref(AdminActivity.this);
                 Intent intent = new Intent(AdminActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 finish();
                 startActivity(intent);
             }

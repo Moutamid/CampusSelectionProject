@@ -126,7 +126,6 @@ public class ActivityLogin extends AppCompatActivity {
                     if (task.isSuccessful()) {
 
                         if (emailStr.equals("wasi3649@gmail.com")) {
-                            // TODO: MOVE TO ADMIN ACTIVITY
                             utils.storeString(ActivityLogin.this,
                                     "token", "admin");
 
@@ -136,7 +135,7 @@ public class ActivityLogin extends AppCompatActivity {
 
                             finish();
                             Intent intent = new Intent(ActivityLogin.this, AdminActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             return;
                         }
@@ -167,6 +166,19 @@ public class ActivityLogin extends AppCompatActivity {
                             Toast.makeText(ActivityLogin.this, "No user exist", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        boolean isDeleted = false;
+
+                        if (snapshot.child("isDeleted").exists()) {
+
+                            isDeleted = snapshot.child("isDeleted").getValue(Boolean.class);
+                        }
+
+                        if (isDeleted){
+                            mProgressDialog.dismiss();
+                            Toast.makeText(ActivityLogin.this, "Your account has been deleted by Admin!", Toast.LENGTH_SHORT).show();
+                            mAuth.signOut();
+                            return;
+                        }
 
                         String status = snapshot.child("status").getValue(String.class);
 
@@ -181,19 +193,17 @@ public class ActivityLogin extends AppCompatActivity {
                                 "token", status);
 
                         if (status.equals("student")) {
-                            //TODO: MOVE TO STUDENT SCREEN
                             finish();
                             Intent intent = new Intent(ActivityLogin.this, StudentActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             return;
                         }
 
                         if (status.equals("company")) {
-                            //TODO: MOVE TO COMPANY SCREEN
                             finish();
                             Intent intent = new Intent(ActivityLogin.this, CompanyActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                         }
 
