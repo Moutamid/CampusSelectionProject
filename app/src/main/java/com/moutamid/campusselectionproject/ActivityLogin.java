@@ -125,7 +125,7 @@ public class ActivityLogin extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
 
-                        if (emailStr.equals("admin@gmail.com")) {
+                        if (emailStr.equals("wasi3649@gmail.com")) {
                             // TODO: MOVE TO ADMIN ACTIVITY
                             utils.storeString(ActivityLogin.this,
                                     "token", "admin");

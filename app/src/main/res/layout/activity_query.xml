@@ -42,7 +42,7 @@
             android:layout_marginTop="40dp"
             android:layout_weight="1"
             android:background="@drawable/submit_btn_background"
-            android:text="Update query"
+            android:text="Upload or Update query"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 

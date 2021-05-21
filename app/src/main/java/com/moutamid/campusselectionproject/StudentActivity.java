@@ -1,24 +1,27 @@
 package com.moutamid.campusselectionproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class StudentActivity extends AppCompatActivity {
+    private ProgressDialog progressDialog;
+    private CompanyDetailModel currentCVmodel;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference databaseReference;
@@ -27,9 +30,13 @@ public class StudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_student);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
 
         findViewById(R.id.logoutBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,24 +66,34 @@ public class StudentActivity extends AppCompatActivity {
                     editText.requestFocus();
                     return;
                 }
-
-
-                utils.showDialog(StudentActivity.this,
-                        "Company details",
-                        "Description Description Description Description Description Description",
-                        "",
-                        "",
-                        new DialogInterface.OnClickListener() {
+                progressDialog.show();
+                databaseReference.child("Companies")
+                        .orderByChild("name")
+                        .equalTo(text)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                if (!snapshot.exists()){
+                                    progressDialog.dismiss();
+                                    Toast.makeText(StudentActivity.this, "No company exist with this name!", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+
+                                currentCVmodel = snapshot.getValue(CompanyDetailModel.class);
+
+                                progressDialog.dismiss();
+                                showListDialog(companyDetails());
+
                             }
-                        }, new DialogInterface.OnClickListener() {
+
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                progressDialog.dismiss();
+                                Toast.makeText(StudentActivity.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        }, true);
+                        });
+
             }
         });
 
@@ -90,6 +107,38 @@ public class StudentActivity extends AppCompatActivity {
         findViewById(R.id.view_placements_cardview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.show();
+
+                databaseReference.child("Companies").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String details = "No companies exist";
+
+                        if (!snapshot.exists()) {
+                            progressDialog.dismiss();
+                            showListDialog(details);
+                            return;
+                        }
+                        details = "";
+
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                            currentCVmodel = dataSnapshot.getValue(CompanyDetailModel.class);
+
+                            details = details + companyDetails();
+
+                        }
+                        progressDialog.dismiss();
+                        showListDialog(details);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        progressDialog.dismiss();
+                        Toast.makeText(StudentActivity.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 utils.showDialog(StudentActivity.this,
                         "Company details",
                         "Description of all companies Description Description Description Description Description",
@@ -117,6 +166,100 @@ public class StudentActivity extends AppCompatActivity {
         });
 
     }
+
+    private static class CompanyDetailModel {
+
+        private String name, number, email, eligibility, vacancies, salary;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public void setNumber(String number) {
+            this.number = number;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getEligibility() {
+            return eligibility;
+        }
+
+        public void setEligibility(String eligibility) {
+            this.eligibility = eligibility;
+        }
+
+        public String getVacancies() {
+            return vacancies;
+        }
+
+        public void setVacancies(String vacancies) {
+            this.vacancies = vacancies;
+        }
+
+        public String getSalary() {
+            return salary;
+        }
+
+        public void setSalary(String salary) {
+            this.salary = salary;
+        }
+
+        public CompanyDetailModel(String name, String number, String email, String eligibility, String vacancies, String salary) {
+            this.name = name;
+            this.number = number;
+            this.email = email;
+            this.eligibility = eligibility;
+            this.vacancies = vacancies;
+            this.salary = salary;
+        }
+
+        CompanyDetailModel() {
+        }
+    }
+
+    private String companyDetails() {
+        return "Name: " + currentCVmodel.getName() + "\n" +
+                "Email: " + currentCVmodel.getEmail() + "\n" +
+                "Mobile No: " + currentCVmodel.getNumber() + "\n" +
+                "Eligibility: " + currentCVmodel.getEligibility() + "\n" +
+                "Vacancy: " + currentCVmodel.getVacancies() + "\n" +
+                "Salary: " + currentCVmodel.getSalary() + "\n\n";
+    }
+
+    private void showListDialog(String details) {
+        utils.showDialog(StudentActivity.this,
+                "Company details",
+                details,
+                "",
+                "",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }, true);
+    }
+
 //        Dialog dialog = new Dialog(this);
 //        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        dialog.setContentView(R.layout.dialog_moutamid);

@@ -65,14 +65,18 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/submit_btn_background"
                 android:text="Student Register"
                 android:textAllCaps="false"
+                android:textSize="14sp"
                 android:textColor="@color/white" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/companyRegisterBtn"
+                android:layout_gravity="center_vertical"
                 android:layout_width="0dp"
+                android:textSize="14sp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"

@@ -1,6 +1,7 @@
 package com.moutamid.campusselectionproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +11,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 public class AdminActivity extends AppCompatActivity {
+
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private DatabaseReference databaseReference;
+//    private DatabaseReference databaseReference;
     private Utils utils = new Utils();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_admin);
 
         findViewById(R.id.logoutBtn_admin).setOnClickListener(new View.OnClickListener() {
