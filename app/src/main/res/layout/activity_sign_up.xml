@@ -120,6 +120,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/registration_number_layout_activity_sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -145,7 +146,7 @@
                 android:layout_marginLeft="10dp"
                 android:background="@color/white"
                 android:hint="Registration number"
-                android:inputType="number"
+                android:inputType="textPersonName"
                 android:textColor="@color/black"
                 android:textColorHint="@color/greyishblue" />
 

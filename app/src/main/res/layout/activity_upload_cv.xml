@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Enter your id" />
+                android:hint="Enter your registration number" />
 
             <EditText
                 android:id="@+id/number_edittext_upload_cv"
@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Enter your university" />
+                android:hint="Enter your UOI Campus" />
 
             <EditText
                 android:id="@+id/year_of_pass_edittext_upload_cv"
@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Aggregate" />
+                android:hint="Description" />
 
             <EditText
                 android:id="@+id/department_edittext_upload_cv"

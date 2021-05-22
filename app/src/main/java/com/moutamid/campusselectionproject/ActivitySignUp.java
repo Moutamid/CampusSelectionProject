@@ -48,7 +48,7 @@ public class ActivitySignUp extends AppCompatActivity {
     private String userNameStr;
     private Utils utils = new Utils();
     private String emailStr;
-private     ArrayList<String> registrationNumbersList = new ArrayList<>();
+    private ArrayList<String> registrationNumbersList = new ArrayList<>();
 
     private String passwordStr;
 
@@ -71,12 +71,6 @@ private     ArrayList<String> registrationNumbersList = new ArrayList<>();
 //            return;
 //        }
 
-        TextView textView = findViewById(R.id.top_text_sign_up);
-        if (getIntent().getStringExtra("token").equals("c")) {
-            isCompany = true;
-            textView.setText("Create your company's account to get all the features");
-        }
-
 //        findViewById(R.id.loginBtn_signUp).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -94,40 +88,51 @@ private     ArrayList<String> registrationNumbersList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.keepSynced(true);
 
+        initViews();
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Loading...");
-        progressDialog.show();
 
-        databaseReference.child("registration_numbers")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        TextView textView = findViewById(R.id.top_text_sign_up);
+        if (getIntent().getStringExtra("token").equals("c")) {
+            isCompany = true;
+            textView.setText("Create your company's account to get all the features");
+//            registrationNumberEdittext.setVisibility(View.GONE);
+            findViewById(R.id.registration_number_layout_activity_sign_up)
+            .setVisibility(View.GONE);
+        } else {
 
-                        if (!snapshot.exists()) {
+            progressDialog.show();
+
+            databaseReference.child("registration_numbers")
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                            if (!snapshot.exists()) {
+                                progressDialog.dismiss();
+                                return;
+                            }
+
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                                String number = dataSnapshot.child("number").getValue(String.class);
+                                registrationNumbersList.add(number);
+                                Log.d(TAG, "onDataChange: " + number);
+
+                            }
                             progressDialog.dismiss();
-                            return;
+                            progressDialog.setMessage("Signing you in...");
                         }
 
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
-                            String number = dataSnapshot.child("number").getValue(String.class);
-                            registrationNumbersList.add(number);
-                            Log.d(TAG, "onDataChange: " + number);
-
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            progressDialog.dismiss();
+                            Toast.makeText(ActivitySignUp.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                        progressDialog.dismiss();
-                        progressDialog.setMessage("Signing you in...");
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        progressDialog.dismiss();
-                        Toast.makeText(ActivitySignUp.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        initViews();
+                    });
+        }
 
     }
 
@@ -151,18 +156,22 @@ private     ArrayList<String> registrationNumbersList = new ArrayList<>();
         numberStr = numberEditText.getText().toString();
         registrationNumberStr = registrationNumberEdittext.getText().toString();
 
-        if (TextUtils.isEmpty(registrationNumberStr)) {
-            progressDialog.dismiss();
-            registrationNumberEdittext.setError("Registration number is empty");
-            registrationNumberEdittext.requestFocus();
-            return;
-        }
+        if (!isCompany) {
 
-        if (!checkIfRegistrationNumberValid(registrationNumberStr)) {
-            progressDialog.dismiss();
-            registrationNumberEdittext.setError("Registration number is invalid");
-            registrationNumberEdittext.requestFocus();
-            return;
+            if (TextUtils.isEmpty(registrationNumberStr)) {
+                progressDialog.dismiss();
+                registrationNumberEdittext.setError("Registration number is empty");
+                registrationNumberEdittext.requestFocus();
+                return;
+            }
+
+            if (!checkIfRegistrationNumberValid(registrationNumberStr)) {
+                progressDialog.dismiss();
+                registrationNumberEdittext.setError("Registration number is invalid");
+                registrationNumberEdittext.requestFocus();
+                return;
+            }
+
         }
 
         if (TextUtils.isEmpty(userNameStr)) {
