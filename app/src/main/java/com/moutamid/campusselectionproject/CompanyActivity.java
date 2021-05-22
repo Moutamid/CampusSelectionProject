@@ -141,6 +141,7 @@ public class CompanyActivity extends AppCompatActivity {
         findViewById(R.id.query_cardview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                finish();
                 startActivity(new Intent(CompanyActivity.this, QueryActivity.class));
             }
         });

@@ -71,7 +71,12 @@ public class EditCompaniesActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                String key = snapshot.getKey();
+                                String key = "error";
+
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                                    key = dataSnapshot.getKey();
+                                }
 
                                 databaseReference.child("users").child(key)
                                         .child("isDeleted").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -159,7 +164,7 @@ public class EditCompaniesActivity extends AppCompatActivity {
 
     private void showListDialog(String details) {
         utils.showDialog(EditCompaniesActivity.this,
-                "Student reports",
+                "Company reports",
                 details,
                 "",
                 "",

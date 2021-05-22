@@ -70,7 +70,12 @@ public class EditStudentsActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                String key = snapshot.getKey();
+                                String key = "error";
+
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                                    key = dataSnapshot.getKey();
+                                }
 
                                 databaseReference.child("users").child(key)
                                         .child("isDeleted").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -109,7 +114,7 @@ public class EditStudentsActivity extends AppCompatActivity {
                 progressDialog.show();
                 databaseReference.child("users")
                         .orderByChild("status")
-                        .equalTo("company")
+                        .equalTo("student")
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {

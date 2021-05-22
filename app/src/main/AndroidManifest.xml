@@ -24,10 +24,14 @@
         </activity>
         <activity android:name=".ReportActivity" />
         <activity android:name=".ActivityLogin" />
-        <activity android:name=".ActivitySignUp" />
+        <activity android:name=".ActivitySignUp">
+
+        </activity>
         <activity android:name=".UploadCvActivity" />
         <activity android:name=".StudentActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity">
+
+        </activity>
     </application>
 
 </manifest>

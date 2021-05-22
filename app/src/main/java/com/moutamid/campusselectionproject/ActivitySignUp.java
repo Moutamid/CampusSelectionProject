@@ -20,16 +20,23 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class ActivitySignUp extends AppCompatActivity {
     private static final String TAG = "ActivitySignUp";
 
-    private EditText userNameEditText, emailEditText, passwordEditText, confirmPasswordEditText, numberEditText;
+    private EditText userNameEditText, emailEditText, passwordEditText,
+            confirmPasswordEditText, numberEditText, registrationNumberEdittext;
+    private String registrationNumberStr;
+
     private Button signUpBtn;
 
     private ProgressDialog progressDialog;
@@ -41,6 +48,7 @@ public class ActivitySignUp extends AppCompatActivity {
     private String userNameStr;
     private Utils utils = new Utils();
     private String emailStr;
+private     ArrayList<String> registrationNumbersList = new ArrayList<>();
 
     private String passwordStr;
 
@@ -88,7 +96,36 @@ public class ActivitySignUp extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
-        progressDialog.setMessage("Signing you in...");
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+
+        databaseReference.child("registration_numbers")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (!snapshot.exists()) {
+                            progressDialog.dismiss();
+                            return;
+                        }
+
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                            String number = dataSnapshot.child("number").getValue(String.class);
+                            registrationNumbersList.add(number);
+                            Log.d(TAG, "onDataChange: " + number);
+
+                        }
+                        progressDialog.dismiss();
+                        progressDialog.setMessage("Signing you in...");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        progressDialog.dismiss();
+                        Toast.makeText(ActivitySignUp.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         initViews();
 
@@ -112,6 +149,21 @@ public class ActivitySignUp extends AppCompatActivity {
         passwordStr = passwordEditText.getText().toString();
         confirmedPasswordStr = confirmPasswordEditText.getText().toString();
         numberStr = numberEditText.getText().toString();
+        registrationNumberStr = registrationNumberEdittext.getText().toString();
+
+        if (TextUtils.isEmpty(registrationNumberStr)) {
+            progressDialog.dismiss();
+            registrationNumberEdittext.setError("Registration number is empty");
+            registrationNumberEdittext.requestFocus();
+            return;
+        }
+
+        if (!checkIfRegistrationNumberValid(registrationNumberStr)) {
+            progressDialog.dismiss();
+            registrationNumberEdittext.setError("Registration number is invalid");
+            registrationNumberEdittext.requestFocus();
+            return;
+        }
 
         if (TextUtils.isEmpty(userNameStr)) {
             progressDialog.dismiss();
@@ -170,6 +222,10 @@ public class ActivitySignUp extends AppCompatActivity {
 
         }
 
+    }
+
+    private boolean checkIfRegistrationNumberValid(String registrationNumberStr) {
+        return registrationNumbersList.contains(registrationNumberStr);
     }
 
     private void signUpUserWithNameAndPassword() {
@@ -309,6 +365,7 @@ public class ActivitySignUp extends AppCompatActivity {
         numberEditText = findViewById(R.id.number_edittext_activity_sign_up);
         passwordEditText = findViewById(R.id.password_edittext_activity_sign_up);
         confirmPasswordEditText = findViewById(R.id.confirm_password_edittext_activity_sign_up);
+        registrationNumberEdittext = findViewById(R.id.registration_number_edittext_activity_sign_up);
 
         signUpBtn = findViewById(R.id.create_btn_activity_sign_up);
         signUpBtn.setOnClickListener(signUpBtnListener());

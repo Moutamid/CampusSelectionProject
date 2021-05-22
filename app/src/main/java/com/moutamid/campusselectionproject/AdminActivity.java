@@ -9,11 +9,12 @@ import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class AdminActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-//    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     private Utils utils = new Utils();
 
     @Override
@@ -21,6 +22,12 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_admin);
+
+//        for (int i = 0; i <= 10; i++) {
+//            databaseReference.child("registration_numbers")
+//                    .push().child("number")
+//                    .setValue(String.valueOf(utils.getRandomNmbr(99999)));
+//        }
 
         findViewById(R.id.logoutBtn_admin).setOnClickListener(new View.OnClickListener() {
             @Override

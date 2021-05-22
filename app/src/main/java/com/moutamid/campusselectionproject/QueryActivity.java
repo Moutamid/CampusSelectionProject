@@ -130,8 +130,12 @@ public class QueryActivity extends AppCompatActivity {
                             Toast.makeText(QueryActivity.this, "No report exist!", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        String key = "error";
 
-                        String key = snapshot.child("key").getValue(String.class);
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                            key = dataSnapshot.child("key").getValue(String.class);
+                        }
 
                         updateStatusValue(key, statusStr);
 
