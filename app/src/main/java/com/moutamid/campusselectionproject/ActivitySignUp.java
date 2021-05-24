@@ -100,7 +100,7 @@ public class ActivitySignUp extends AppCompatActivity {
             textView.setText("Create your company's account to get all the features");
 //            registrationNumberEdittext.setVisibility(View.GONE);
             findViewById(R.id.registration_number_layout_activity_sign_up)
-            .setVisibility(View.GONE);
+                    .setVisibility(View.GONE);
         } else {
 
             progressDialog.show();
@@ -247,27 +247,61 @@ public class ActivitySignUp extends AppCompatActivity {
             emailEditText.requestFocus();
         } else {
 
-            mAuth.createUserWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
+            if (isCompany) {
+                signUp();
+            } else {
 
-                    if (task.isSuccessful()) {
+                databaseReference.child("users")
+                        .orderByChild("registration_number")
+                        .equalTo(registrationNumberStr)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (!snapshot.exists()) {
+                                    signUp();
+                                    return;
+                                }
 
-                        addUserDetailsToDatabase();
+                                progressDialog.dismiss();
 
-                    } else {
+                                Toast.makeText(ActivitySignUp.this,
+                                        "This registration number has already been registered!", Toast.LENGTH_SHORT).show();
 
-                        progressDialog.dismiss();
-                        Toast.makeText(ActivitySignUp.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                progressDialog.dismiss();
+                                Toast.makeText(ActivitySignUp.this, error.toException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            }
+
         }
 //        } else {
 //
 //            mDialog.dismiss();
 //            Toast.makeText(this, "You are not online", Toast.LENGTH_SHORT).show();
 //        }
+    }
+
+    private void signUp() {
+        mAuth.createUserWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                if (task.isSuccessful()) {
+
+                    addUserDetailsToDatabase();
+
+                } else {
+
+                    progressDialog.dismiss();
+                    Toast.makeText(ActivitySignUp.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private static class UserDetails {
@@ -322,7 +356,10 @@ public class ActivitySignUp extends AppCompatActivity {
 
         if (isCompany) {
             map.put("status", "company");
-        } else map.put("status", "student");
+        } else {
+            map.put("status", "student");
+            map.put("registration_number", registrationNumberStr);
+        }
 
 
         databaseReference.child("users").child(mAuth.getCurrentUser().getUid())
