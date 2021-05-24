@@ -54,5 +54,12 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.editRegistrationNumbers_cardview).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(AdminActivity.this, RegistrationNumbersActivity.class));
+            }
+        });
+
     }
 }
