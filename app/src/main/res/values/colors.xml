@@ -20,6 +20,7 @@
     <color name="greyishblue">#7b83a9</color>
     <color name="lighterGreyishblue">#e9ebf8</color>
     <color name="orange">#f2793a</color>
+    <color name="darkOrange">#000000</color>
     <color name="darkBlackSpotify">#191919</color>
     <color name="lightBlackSpotify">#212121</color>
     <color name="white">#ffffff</color>
